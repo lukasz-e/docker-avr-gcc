@@ -13,6 +13,7 @@ cores=4
 VERSION_BINUTILS="2.32"
 VERSION_GCC="9.2.0"
 VERSION_LIBC="2.0.0"
+GCC_PROGRAM_SUFFIX="9"
 
 # Get sources
 cd ${DOWNLOAD}
@@ -47,6 +48,8 @@ mkdir build && cd build
 ../configure --target=avr --prefix=${INSTALL}/avr-gcc/ \
         --with-ld=${INSTALL}/avr-binutils/bin/avr-ld \
         --with-as=${INSTALL}/avr-binutils/bin/avr-as \
+        --program-suffix=${GCC_PROGRAM_SUFFIX} \
+        --program-prefix="avr-" \
         --enable-languages=c,c++ --with-dwarf2 \
         --disable-nls --disable-libssp --disable-shared \
         --disable-threads --disable-libgomp --disable-bootstrap
@@ -55,6 +58,7 @@ make install
 
 # prepend path of newly compiled avr-gcc
 export PATH=${INSTALL}/avr-gcc/bin:$PATH
+export CC=avr-gcc9
 
 cd ${root}
 cd ${SRC}/avr-libc-${VERSION_LIBC}
@@ -64,7 +68,8 @@ build=`./config.guess`
 make install -j${cores}
 
 cd ${root}
-#rm -r build src
+tar cvf avrgcc_dist.tar.bz2 /opt/avr
+rm -r build src
 #rm avr-binutils-${VERSION_BINUTILS}-size.patch
 #rm avr-libc-${VERSION_LIBC}-atmega168pb.patch
 
